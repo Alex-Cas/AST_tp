@@ -10,6 +10,12 @@ Nous pouvons accéder à 3 pages distinctes avec 3 urls :
 3. localhost:8080/hello?name=xxx
 ```
 
+Lancer le serveur avec la commande :
+
+```
+node .\index.js
+```
+
 ## Utilisation
 
 ### Page *Home*
