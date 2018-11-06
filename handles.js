@@ -27,6 +27,10 @@ module.exports = {
 
             res.write('Hello ' + params['name'])
         }
+    }
+    else if (path === '/hello') {
+
+        res.write('Hello anonymous !');
     } 
     else if (path === '/') {
 
