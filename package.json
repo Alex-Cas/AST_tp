@@ -18,7 +18,8 @@
   "homepage": "https://github.com/Alex-Cas/AST_tp1#readme",
   "dependencies": {
     "bootstrap": "^4.1.3",
-    "expressjs": "^1.0.1",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
     "jquery": "^3.3.1",
     "nodemon": "^1.18.6"
   }
