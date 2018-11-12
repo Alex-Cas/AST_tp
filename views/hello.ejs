@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include partials/head %>
+    </head>
+    <body>
+        <% if (name === "Alexandre") { %>
+            <div class="container">
+                Alexandre est un jeune cadre dynamique (Etudiant) a l'ECE Paris
+            </div>
+        <% } else { %>
+            <div class="container">
+                Hello <%= name %> !
+            </div>
+        <% } %>
+    </body>
+</html>
