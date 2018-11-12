@@ -1,0 +1,25 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "Le serveur est une introduction aux routes et à NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alex-Cas/AST_tp1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alex-Cas/AST_tp1/issues"
+  },
+  "homepage": "https://github.com/Alex-Cas/AST_tp1#readme",
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "expressjs": "^1.0.1",
+    "jquery": "^3.3.1",
+    "nodemon": "^1.18.6"
+  }
+}
