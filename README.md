@@ -31,3 +31,8 @@ Une url qui n'est pas repertoriée ci-dessus renverra une message d'erreur 404.
 
 ## Auteur
 Alexandre CASARA.
+
+
+
+## Note : tp3
+Le tp a été basé (par mégarde) sur les anciennes instructions qui demandaient un front avec du css. 
