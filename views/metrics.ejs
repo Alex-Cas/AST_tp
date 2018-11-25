@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include partials/head %>
+    </head>
+    <body class="bg-light">
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h1>Data</h1>
+                    </div>
+                    <div class="card-text">
+                        <% if (data) { %>
+                            <ul>
+                                <% data.forEach(d => { %>
+                                    <li>
+                                        key: <%= d.key %> <br />
+                                        value: <%= d.value %>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <svg width='500' height='400' style="overflow : visible; padding-top: 400px"></svg>
+        </div>
+        <script>
+
+            var cdata = <%- JSON.stringify(data) %>
+            var adata = []
+            cdata.forEach(d => {
+                adata.push(d.value)
+            })
+            console.log(adata)
+
+            var barWidth = 70;
+            var bar = d3.select('svg')
+                      .selectAll('rect')
+                      .data(adata)
+                      .enter()
+                      .append('rect')
+                      .attr('width', barWidth - 1)
+                      .attr('height', function(d) {  return d*15; })
+                      .attr('transform', function(d, i) {
+                        return "translate(" + i * barWidth + ", 0) rotate(180)";
+                      });
+
+        </script>
+
+    </body>
+</html>
