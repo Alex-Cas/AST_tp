@@ -17,11 +17,30 @@ var MetricsHandler = /** @class */ (function () {
     function MetricsHandler(dbPath) {
         this.db = leveldb_1.LevelDb.open(dbPath);
     }
-    MetricsHandler.prototype.get = function (callback) {
+    MetricsHandler.prototype.list = function (callback) {
         var _this = this;
         var stream = this.db.createReadStream();
         var result = [];
         stream.on('data', function (data) { result.push(data); });
+        stream.on('error', callback);
+        stream.on('close', callback);
+        stream.on('end', function () {
+            _this.db.close();
+            callback(null, result);
+        });
+    };
+    MetricsHandler.prototype.get = function (key, callback) {
+        var _this = this;
+        var stream = this.db.createReadStream();
+        var result = [];
+        stream.on('data', function (data) {
+            if (data.key.split(':')[1] == key) {
+                result.push(data);
+            }
+            else {
+                console.log('not found');
+            }
+        });
         stream.on('error', callback);
         stream.on('close', callback);
         stream.on('end', function () {
@@ -39,6 +58,7 @@ var MetricsHandler = /** @class */ (function () {
         });
         stream.end(function () {
             _this.db.close;
+            callback(null);
         });
     };
     MetricsHandler.prototype.remove = function (key, callback) {

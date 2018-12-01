@@ -18,7 +18,7 @@ export class MetricsHandler {
     this.db = LevelDb.open(dbPath)
   }
 
-  public get(callback: (error: Error | null, result?: Metric[]) => void) {
+  public list(callback: (error: Error | null, result?: Metric[]) => void) {
 
     const stream = this.db.createReadStream()
     
@@ -35,6 +35,31 @@ export class MetricsHandler {
     })
   }
 
+  public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
+
+      const stream = this.db.createReadStream()
+
+      let result: any[] = []
+ 
+      stream.on('data', (data) => {
+          if (data.key.split(':')[1] == key) {
+              result.push(data)
+          }
+          else {
+              console.log('not found')
+          }
+      })
+
+      stream.on('error', callback)
+      stream.on('close', callback)
+
+      stream.on('end', () => {
+        this.db.close()
+        callback(null, result)
+      })
+
+  }
+
   public save(key: number, metrics: Metric[], callback: (error: Error | null) => void) {
     
     const stream = WriteStream(this.db)
@@ -48,6 +73,7 @@ export class MetricsHandler {
 
     stream.end(() => {
         this.db.close
+        callback(null)
     })
   }
 
