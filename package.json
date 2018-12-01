@@ -4,7 +4,7 @@
   "description": "Le serveur est une introduction aux routes et à NodeJS",
   "main": "dist/server",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts",
     "start": ".\\node_modules\\.bin\\tsc -p tsconfig.json && .\\node_modules\\.bin\\ts-node dist\\server.js",
     "dev": "./node_modules/.bin/nodemon",
     "build": "./node_modules/.bin/tsc -p tsconfig.json"
@@ -33,6 +33,7 @@
     "leveldown": "^4.0.1",
     "levelup": "^3.1.1",
     "nodemon": "^1.18.6",
+    "should": "^13.2.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.6"
   },
