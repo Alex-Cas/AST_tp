@@ -1,4 +1,5 @@
 import express = require('express')
+import morgan = require('morgan')
 import bodyparser = require('body-parser')
 import { MetricsHandler } from './metrics'
 import path = require('path')
@@ -13,6 +14,7 @@ const port: string = process.env.PORT || '8080'
 
 const LevelStore = levelSession(session)
 
+app.use(morgan('dev'))
 
 app.use(session({
   secret: 'my very secret phrase',
