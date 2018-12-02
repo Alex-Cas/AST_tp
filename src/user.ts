@@ -1,16 +1,21 @@
+const bcrypt = require('bcryptjs')
+
 export class User {
     public username: string
     public email: string
     private password: string = ""
 
-    constructor(username: string, email: string, password: string, passwordHashed: boolean = false) {
+    constructor(username: string, email: string, password: string, passwordHashed: boolean = true) {
         this.username = username
         this.email = email
 
         if (!passwordHashed) {
         
+            this.setPassword(password)
+        }
+        else {
+            
             this.password = password
-            //this.setPassword(password)
         }
     }
 
@@ -20,7 +25,8 @@ export class User {
     }
 
     public setPassword(toSet: string): void {
-        this.password = toSet
+        var hash = bcrypt.hashSync(toSet, 10)
+        this.password = hash
     }
 
     public getPassword(): string {
@@ -28,7 +34,8 @@ export class User {
     }
 
     public validatePassword(toValidate: String): boolean {
-        return this.password === toValidate
+        var toReturn = bcrypt.compareSync(toValidate, this.getPassword())
+        return toReturn
     }
 }
 
@@ -48,7 +55,7 @@ export class UserHandler {
 
     public save(user: any, callback: (err: Error | null) => void) {
 
-        user = new User(user.username, user.email, user.password)
+        user = new User(user.username, user.email, user.password, false)
 
         this.db.put(
             `user:${user.username}`,

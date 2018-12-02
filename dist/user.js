@@ -1,14 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var bcrypt = require('bcryptjs');
 var User = /** @class */ (function () {
     function User(username, email, password, passwordHashed) {
-        if (passwordHashed === void 0) { passwordHashed = false; }
+        if (passwordHashed === void 0) { passwordHashed = true; }
         this.password = "";
         this.username = username;
         this.email = email;
         if (!passwordHashed) {
+            //this.password = password
+            this.setPassword(password);
+        }
+        else {
             this.password = password;
-            //this.setPassword(password)
         }
     }
     User.fromDb = function (username, value) {
@@ -16,13 +20,20 @@ var User = /** @class */ (function () {
         return new User(username, email, password);
     };
     User.prototype.setPassword = function (toSet) {
-        this.password = toSet;
+        /*bcrypt.hash(toSet, 10, (err, hash) => {
+          // Store hash in your password DB.
+            this.password = hash
+        })*/
+        var hash = bcrypt.hashSync(toSet, 10);
+        this.password = hash;
+        //this.password = toSet
     };
     User.prototype.getPassword = function () {
         return this.password;
     };
     User.prototype.validatePassword = function (toValidate) {
-        return this.password === toValidate;
+        var toReturn = bcrypt.compareSync(toValidate, this.getPassword());
+        return toReturn;
     };
     return User;
 }());
@@ -43,8 +54,8 @@ var UserHandler = /** @class */ (function () {
         });
     };
     UserHandler.prototype.save = function (user, callback) {
-        user = new User(user.username, user.email, user.password);
-        this.db.put("user:" + user.username, user.getPassword() + ": " + user.email, function (err) {
+        user = new User(user.username, user.email, user.password, false);
+        this.db.put("user:" + user.username, user.getPassword() + ":" + user.email, function (err) {
             callback(err);
         });
     };

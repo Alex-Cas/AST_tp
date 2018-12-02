@@ -5,7 +5,7 @@ var chai_1 = require("chai");
 var metrics_1 = require("./metrics");
 var leveldb_1 = require("./leveldb");
 var assert = require('assert');
-var dbPath = 'db_test';
+var dbPath = 'db_test/metrics';
 var dbMet;
 describe('Metrics', function () {
     before(function () {
@@ -14,15 +14,6 @@ describe('Metrics', function () {
     });
     after(function () {
         dbMet.db.close();
-    });
-    describe('#get', function () {
-        it('should get empty array on non existing group', function () {
-            dbMet.list('alexandre', function (err, result) {
-                chai_1.expect(err).to.be.null;
-                chai_1.expect(result).to.not.be.undefined;
-                chai_1.expect(result).to.be.empty;
-            });
-        });
     });
     describe('#save', function () {
         it('shoud save data', function (done) {
@@ -36,10 +27,21 @@ describe('Metrics', function () {
             });
         });
     });
-    /*describe('#delete', () => {
-
-        it('should delete data', (done) => {
-
-        })
-    })*/
+    describe('#get', function () {
+        it('should get empty array on non existing group', function () {
+            dbMet.list('alexandre', function (err, result) {
+                chai_1.expect(err).to.be.null;
+                chai_1.expect(result).to.not.be.undefined;
+                chai_1.expect(result).to.not.be.empty;
+            });
+        });
+    });
+    describe('#delete', function () {
+        it('should delete data', function (done) {
+            dbMet.remove('metric:alexandre:0', function (err) {
+                assert.equal(err, null);
+                done();
+            });
+        });
+    });
 });

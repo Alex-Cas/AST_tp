@@ -1,4 +1,3 @@
-//import 'should'
 import { expect } from 'chai'
 import { User, UserHandler } from './user'
 import { LevelDb } from "./leveldb"

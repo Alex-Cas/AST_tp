@@ -1,4 +1,3 @@
-//import 'should'
 import { expect } from 'chai'
 import { Metric, MetricsHandler } from './metrics'
 import { LevelDb } from "./leveldb"

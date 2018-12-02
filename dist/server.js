@@ -87,7 +87,7 @@ userRouter.get('/:username', function (req, res, next) {
 userRouter.post('/', function (req, res, next) {
     dbUser.get(req.body.username, function (err, result) {
         if (!err || result !== undefined) {
-            res.status(409).send("user alraedy exists");
+            res.status(409).send("user already exists");
         }
         else {
             dbUser.save(req.body, function (err) {
@@ -110,13 +110,13 @@ userRouter.delete('/:username', function (req, res, next) {
 });
 app.use('/user', userRouter);
 // METRICS
-var router = express.Router();
-router.use(function (req, res, next) {
+var metricsRouter = express.Router();
+metricsRouter.use(function (req, res, next) {
     console.log(req.method);
     next();
 });
 var dbMet = new metrics_1.MetricsHandler('db/metrics');
-router.get('/', function (req, res, next) {
+metricsRouter.get('/', function (req, res, next) {
     dbMet.list(req.session.user.username, function (err, result) {
         if (err)
             next(err);
@@ -130,7 +130,7 @@ router.get('/', function (req, res, next) {
         res.json(result)
     })
 })*/
-router.post('/', function (req, res, next) {
+metricsRouter.post('/', function (req, res, next) {
     dbMet.save(req.session.user.username, req.body, function (err) {
         if (err)
             next(err);
@@ -138,16 +138,15 @@ router.post('/', function (req, res, next) {
         res.redirect('/metrics');
     });
 });
-router.delete('/', function (req, res, next) {
+metricsRouter.delete('/', function (req, res, next) {
     dbMet.remove(req.body.key, function (err) {
         if (err)
             next(err);
         res.redirect(303, '/metrics');
         console.log(err);
-        //res.status(200).send("ok")
     });
 });
-app.use('/metrics', authCheck, router);
+app.use('/metrics', authCheck, metricsRouter);
 app.get('*', function (req, res) {
     res.status(404).render('notFound', { url: req.url });
 });
