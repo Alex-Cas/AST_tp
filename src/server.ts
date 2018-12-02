@@ -109,7 +109,7 @@ userRouter.post('/', function(req: any, res: any, next: any) {
 
     dbUser.get(req.body.username, function(err: Error | null, result?: User) {
         if (!err || result !== undefined) {
-            res.status(409).send("user alraedy exists")
+            res.status(409).send("user already exists")
         }
         else {
 
@@ -135,16 +135,16 @@ userRouter.delete('/:username', (req: any, res: any, next: any) => {
 app.use('/user', userRouter)
 
 // METRICS
-const router = express.Router()
+const metricsRouter = express.Router()
 
-router.use(function (req: any, res: any, next: any) {
+metricsRouter.use(function (req: any, res: any, next: any) {
     console.log(req.method)
     next()
 })
 
 const dbMet = new MetricsHandler('db/metrics')
 
-router.get('/', (req: any, res: any, next: any) => {
+metricsRouter.get('/', (req: any, res: any, next: any) => {
 
     dbMet.list(req.session.user.username, (err: Error | null, result?: any) => {
         if (err) next(err)
@@ -160,7 +160,7 @@ router.get('/', (req: any, res: any, next: any) => {
     })
 })*/
 
-router.post('/', (req: any, res: any, next: any) => {
+metricsRouter.post('/', (req: any, res: any, next: any) => {
 
     dbMet.save(req.session.user.username, req.body, (err: Error | null) => {
         if (err) next(err)
@@ -169,17 +169,16 @@ router.post('/', (req: any, res: any, next: any) => {
     })
 })
 
-router.delete('/', (req: any, res: any, next: any) => {
+metricsRouter.delete('/', (req: any, res: any, next: any) => {
 
     dbMet.remove(req.body.key, (err: Error | null) => {
         if (err) next(err)
         res.redirect(303, '/metrics')
-    console.log(err)
-        //res.status(200).send("ok")
+        console.log(err)
     })
 })
 
-app.use('/metrics', authCheck, router)
+app.use('/metrics', authCheck, metricsRouter)
 
 
 
