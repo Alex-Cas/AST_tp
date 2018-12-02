@@ -1,10 +1,10 @@
-import 'should'
+//import 'should'
 import { expect } from 'chai'
 import { Metric, MetricsHandler } from './metrics'
 import { LevelDb } from "./leveldb"
 var assert = require('assert')
 
-const dbPath: string = 'db_test'
+const dbPath: string = 'db_test/metrics'
 var dbMet: MetricsHandler
 
 describe('Metrics', function () {
@@ -18,16 +18,6 @@ describe('Metrics', function () {
         dbMet.db.close()
     })
 
-    describe('#get', function () {
-        it('should get empty array on non existing group', function () {
-            dbMet.get("0", function (err: Error | null, result?: Metric[]) {
-                expect(err).to.be.null
-                expect(result).to.not.be.undefined
-                expect(result).to.be.empty
-            })
-        })
-    })
-
     describe('#save', () => {
         
         it('shoud save data', (done) => {
@@ -35,17 +25,30 @@ describe('Metrics', function () {
                 new Metric('0', 10),
                 new Metric('1', 11)
             ]
-            dbMet.save(0, metrics, (err: Error | null) => {
+            dbMet.save('alexandre', metrics, (err: Error | null) => {
                 assert.equal(err, null)
                 done()
             })
         })
     })
 
-    /*describe('#delete', () => {
+    describe('#get', () => {
+        it('should get empty array on non existing group', function () {
+            dbMet.list('alexandre', function (err: Error | null, result?: Metric[]) {
+                expect(err).to.be.null
+                expect(result).to.not.be.undefined
+                expect(result).to.not.be.empty
+            })
+        })
+    })
+
+    describe('#delete', () => {
 
         it('should delete data', (done) => {
-
+            dbMet.remove('metric:alexandre:0', (err: Error | null) => {
+                assert.equal(err, null)
+                done()
+            })
         })
-    })*/
+    })
 })

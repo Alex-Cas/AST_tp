@@ -17,56 +17,48 @@ var MetricsHandler = /** @class */ (function () {
     function MetricsHandler(dbPath) {
         this.db = leveldb_1.LevelDb.open(dbPath);
     }
-    MetricsHandler.prototype.list = function (callback) {
-        var _this = this;
-        var stream = this.db.createReadStream();
+    MetricsHandler.prototype.list = function (key, callback) {
         var result = [];
-        stream.on('data', function (data) { result.push(data); });
-        stream.on('error', callback);
-        stream.on('close', callback);
-        stream.on('end', function () {
-            _this.db.close();
-            callback(null, result);
-        });
-    };
-    MetricsHandler.prototype.get = function (key, callback) {
-        var _this = this;
-        var stream = this.db.createReadStream();
-        var result = [];
-        stream.on('data', function (data) {
+        this.db.createReadStream()
+            .on('data', function (data) {
             if (data.key.split(':')[1] == key) {
                 result.push(data);
             }
-            else {
-                console.log('not found');
-            }
-        });
-        stream.on('error', callback);
-        stream.on('close', callback);
-        stream.on('end', function () {
-            _this.db.close();
-            callback(null, result);
-        });
+        })
+            .on('error', function (err) { callback(err); })
+            .on('end', function () { callback(null, result); });
     };
+    /*public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
+
+        let result: any[] = []
+
+        this.db.createReadStream()
+            .on('data', (data) => {
+                if (data.key.split(':')[1] == key) {
+                    result.push(data)
+                }
+            })
+            .on('error', (err) => {callback(err)})
+            .on('end', () => {callback(null, result)})
+    }*/
     MetricsHandler.prototype.save = function (key, metrics, callback) {
-        var _this = this;
         var stream = level_ws_1.default(this.db);
+        if (!Array.isArray(metrics)) {
+            metrics = [metrics];
+        }
         stream.on('error', callback);
         stream.on('close', callback);
         metrics.forEach(function (m) {
             stream.write({ key: "metric:" + key + ":" + m.timestamp, value: m.value });
         });
         stream.end(function () {
-            _this.db.close;
-            callback(null);
+            callback;
         });
     };
     MetricsHandler.prototype.remove = function (key, callback) {
-        var _this = this;
         this.db.del(key, function (err) {
             if (err)
                 console.log(err);
-            _this.db.close();
             callback(err);
         });
     };

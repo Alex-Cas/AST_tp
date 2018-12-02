@@ -10,12 +10,12 @@ export class User {
         if (!passwordHashed) {
         
             this.password = password
-            this.setPassword(password)
+            //this.setPassword(password)
         }
     }
 
     static fromDb(username: string, value: any): User {
-        const [password, email] = value.split('')
+        const [password, email] = value.split(':')
         return new User(username, email, password)
     }
 
@@ -46,17 +46,29 @@ export class UserHandler {
         })
     }
 
-    public save(user: User, callback: (err: Error | null) => void) {
+    public save(user: any, callback: (err: Error | null) => void) {
+
+        user = new User(user.username, user.email, user.password)
+
         this.db.put(
             `user:${user.username}`,
-            `${user.getPassword}: ${user.email}`,
+            `${user.getPassword()}:${user.email}`,
             (err: Error | null) => {
-                //throw err?
-            })
+                callback(err)
+            }
+        )
     }
 
-    public delete(username: string, callback: (err: Error | null) => void) {
-    // TODO
+    public remove(username: string, callback: (err: Error | null) => void) {
+        
+        this.db.del(
+            `user:${username}`,
+            (error: Error | null) => {
+
+                if (error) callback(error)
+                else callback(null)
+            }
+        )
     }
 
     constructor(path: string) {

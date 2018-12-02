@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
+var morgan = require("morgan");
 var bodyparser = require("body-parser");
 var metrics_1 = require("./metrics");
 var path = require("path");
 var session = require("express-session");
 var levelSession = require("level-session-store");
 var user_1 = require("./user");
-var dbUser = new user_1.UserHandler('./db/users');
 var app = express();
 var port = process.env.PORT || '8080';
 var LevelStore = levelSession(session);
+app.use(morgan('dev'));
 app.use(session({
     secret: 'my very secret phrase',
     store: new LevelStore('./db/sessions'),
@@ -37,6 +38,7 @@ var authRouter = express.Router();
 authRouter.get('/login', function (req, res) {
     res.render('login');
 });
+var dbUser = new user_1.UserHandler('./db/users');
 authRouter.post('/login', function (req, res, next) {
     dbUser.get(req.body.username, function (err, result) {
         if (err)
@@ -56,6 +58,7 @@ authRouter.get('/signup', function (req, res) {
 });
 authRouter.get('/logout', function (req, res) {
     if (req.session.loggedIn) {
+        console.log("success logout");
         delete req.session.loggedIn;
         delete req.session.user;
     }
@@ -86,12 +89,23 @@ userRouter.post('/', function (req, res, next) {
         if (!err || result !== undefined) {
             res.status(409).send("user alraedy exists");
         }
-        dbUser.save(req.body, function (err) {
-            if (err)
-                next(err);
-            else
-                res.status(201).send("user persisted");
-        });
+        else {
+            dbUser.save(req.body, function (err) {
+                if (err)
+                    next(err);
+                else
+                    res.status(201).send("user persisted");
+            });
+        }
+    });
+});
+userRouter.delete('/:username', function (req, res, next) {
+    dbUser.remove(req.params.username, function (err) {
+        console.log(err);
+        if (err)
+            res.status(404).send("user " + req.params.username + " not found");
+        else
+            res.status(200).send("success deletion of " + req.params.username);
     });
 });
 app.use('/user', userRouter);
@@ -101,38 +115,36 @@ router.use(function (req, res, next) {
     console.log(req.method);
     next();
 });
+var dbMet = new metrics_1.MetricsHandler('db/metrics');
 router.get('/', function (req, res, next) {
-    var handler = new metrics_1.MetricsHandler('db/metrics');
-    handler.list(function (err, result) {
+    dbMet.list(req.session.user.username, function (err, result) {
         if (err)
             next(err);
         res.render('metrics', { data: result });
     });
 });
-router.get('/:id', function (req, res, next) {
-    var handler = new metrics_1.MetricsHandler('db/metrics');
-    handler.get(req.params.id, function (err, result) {
-        if (err)
-            next(err);
-        res.json(result);
-    });
-});
-router.post('/:id', function (req, res, next) {
-    var handler = new metrics_1.MetricsHandler('db/metrics');
-    handler.save(req.params.id, req.body, function (err) {
+/*router.get('/:id', (req: any, res: any, next: any) => {
+
+    dbMet.get(req.params.id, (err: Error | null, result?: any) => {
+        if (err) next(err)
+        res.json(result)
+    })
+})*/
+router.post('/', function (req, res, next) {
+    dbMet.save(req.session.user.username, req.body, function (err) {
         if (err)
             next(err);
         console.log('data posted');
-        res.end();
+        res.redirect('/metrics');
     });
 });
 router.delete('/', function (req, res, next) {
-    var handler = new metrics_1.MetricsHandler('db/metrics');
-    handler.remove(req.body.key, function (err) {
+    dbMet.remove(req.body.key, function (err) {
         if (err)
             next(err);
-        console.log('data posted');
-        res.end();
+        res.redirect(303, '/metrics');
+        console.log(err);
+        //res.status(200).send("ok")
     });
 });
 app.use('/metrics', authCheck, router);

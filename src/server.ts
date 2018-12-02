@@ -7,8 +7,6 @@ import session = require('express-session')
 import levelSession = require('level-session-store')
 import { UserHandler, User } from './user'
 
-const dbUser: UserHandler = new UserHandler('./db/users')
-
 const app = express()
 const port: string = process.env.PORT || '8080'
 
@@ -50,7 +48,11 @@ authRouter.get('/login', function (req: any, res: any) {
     res.render('login')
 })
 
+
+const dbUser: UserHandler = new UserHandler('./db/users')
+
 authRouter.post('/login', function(req: any, res: any, next: any) {
+
     dbUser.get(req.body.username, function(err: Error | null, result?: User) {
         if (err) next(err)
         if (result === undefined || !result.validatePassword(req.body.password)) {
@@ -61,7 +63,6 @@ authRouter.post('/login', function(req: any, res: any, next: any) {
             req.session.user = result
             res.redirect('/')
         }
-
     })
 })
 
@@ -72,6 +73,7 @@ authRouter.get('/signup', function(req: any, res: any) {
 authRouter.get('/logout', function(req: any, res: any) {
     if (req.session.loggedIn) {
 
+        console.log("success logout")
         delete req.session.loggedIn
         delete req.session.user
     }
@@ -95,6 +97,7 @@ const authCheck = function(req: any, res: any, next: any) {
 const userRouter = express.Router()
 
 userRouter.get('/:username', function(req: any, res: any, next: any) {
+
     dbUser.get(req.params.username, function(err: Error | null, result?: User) {
         if (err || result == undefined) {
             res.status(404).send("user not found")
@@ -103,14 +106,28 @@ userRouter.get('/:username', function(req: any, res: any, next: any) {
 })
 
 userRouter.post('/', function(req: any, res: any, next: any) {
+
     dbUser.get(req.body.username, function(err: Error | null, result?: User) {
         if (!err || result !== undefined) {
             res.status(409).send("user alraedy exists")
         }
-        dbUser.save(req.body, function(err: Error | null) {
-            if (err) next(err)
-            else res.status(201).send("user persisted")
-        })
+        else {
+
+            dbUser.save(req.body, function(err: Error | null) {
+                if (err) next(err)
+                else res.status(201).send("user persisted")
+            })
+        }
+    })
+})
+
+userRouter.delete('/:username', (req: any, res: any, next: any) => {
+
+    dbUser.remove(req.params.username, function(err: Error | null) {
+
+        console.log(err)
+        if (err) res.status(404).send(`user ${req.params.username} not found`)
+        else res.status(200).send(`success deletion of ${req.params.username}`)
     })
 })
 
@@ -125,37 +142,40 @@ router.use(function (req: any, res: any, next: any) {
     next()
 })
 
+const dbMet = new MetricsHandler('db/metrics')
+
 router.get('/', (req: any, res: any, next: any) => {
-    const handler = new MetricsHandler('db/metrics')
-    handler.list((err: Error | null, result?: any) => {
+
+    dbMet.list(req.session.user.username, (err: Error | null, result?: any) => {
         if (err) next(err)
         res.render('metrics', {data: result})
     })
 })
 
-router.get('/:id', (req: any, res: any, next: any) => {
-    const handler = new MetricsHandler('db/metrics')
-    handler.get(req.params.id, (err: Error | null, result?: any) => {
+/*router.get('/:id', (req: any, res: any, next: any) => {
+
+    dbMet.get(req.params.id, (err: Error | null, result?: any) => {
         if (err) next(err)
         res.json(result)
     })
-})
+})*/
 
-router.post('/:id', (req: any, res: any, next: any) => {
-    const handler = new MetricsHandler('db/metrics')
-    handler.save(req.params.id, req.body, (err: Error | null) => {
+router.post('/', (req: any, res: any, next: any) => {
+
+    dbMet.save(req.session.user.username, req.body, (err: Error | null) => {
         if (err) next(err)
         console.log('data posted')
-        res.end()
+        res.redirect('/metrics')
     })
 })
 
 router.delete('/', (req: any, res: any, next: any) => {
-    const handler = new MetricsHandler('db/metrics')
-    handler.remove(req.body.key, (err: Error | null) => {
+
+    dbMet.remove(req.body.key, (err: Error | null) => {
         if (err) next(err)
-        console.log('data posted')
-        res.end()
+        res.redirect(303, '/metrics')
+    console.log(err)
+        //res.status(200).send("ok")
     })
 })
 

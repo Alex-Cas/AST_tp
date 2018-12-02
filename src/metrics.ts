@@ -12,77 +12,65 @@ export class Metric {
 }
 
 export class MetricsHandler {
-  public db: any 
+    public db: any 
 
-  constructor(dbPath: string) {
-    this.db = LevelDb.open(dbPath)
-  }
+    constructor(dbPath: string) {
+        this.db = LevelDb.open(dbPath)
+    }
 
-  public list(callback: (error: Error | null, result?: Metric[]) => void) {
+    public list(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
 
-    const stream = this.db.createReadStream()
-    
-    let result: any[] = []
+        let result: any[] = []
 
-    stream.on('data', (data) => {result.push(data)})
+        this.db.createReadStream()
+            .on('data', (data) => {
+                if (data.key.split(':')[1] == key) {
+                    result.push(data)
+                }
+            })
+            .on('error', (err) => {callback(err)})
+            .on('end', () => {callback(null, result)})
+    }
 
-    stream.on('error', callback)
-    stream.on('close', callback)
+    /*public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
 
-    stream.on('end', () => {
-        this.db.close()
-        callback(null, result)
-    })
-  }
+        let result: any[] = []
 
-  public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
+        this.db.createReadStream()
+            .on('data', (data) => {
+                if (data.key.split(':')[1] == key) {
+                    result.push(data)
+                }
+            })
+            .on('error', (err) => {callback(err)})
+            .on('end', () => {callback(null, result)})
+    }*/
 
-      const stream = this.db.createReadStream()
+    public save(key: string, metrics: Metric[], callback: (error: Error | null) => void) {
 
-      let result: any[] = []
- 
-      stream.on('data', (data) => {
-          if (data.key.split(':')[1] == key) {
-              result.push(data)
-          }
-          else {
-              console.log('not found')
-          }
-      })
+        const stream = WriteStream(this.db)
 
-      stream.on('error', callback)
-      stream.on('close', callback)
+        if (!Array.isArray(metrics)) {
+            metrics = [metrics]
+        }
 
-      stream.on('end', () => {
-        this.db.close()
-        callback(null, result)
-      })
+        stream.on('error', callback)
+        stream.on('close', callback)
 
-  }
+        metrics.forEach(m => {
+            stream.write({ key: `metric:${key}:${m.timestamp}`, value: m.value })
+        })
 
-  public save(key: number, metrics: Metric[], callback: (error: Error | null) => void) {
-    
-    const stream = WriteStream(this.db)
+        stream.end(() => {
+            callback
+        })
+    }
 
-    stream.on('error', callback)
-    stream.on('close', callback)
-
-    metrics.forEach(m => {
-      stream.write({ key: `metric:${key}:${m.timestamp}`, value: m.value })
-    })
-
-    stream.end(() => {
-        this.db.close()
-        callback
-    })
-  }
-
-  public remove(key: any, callback: (error: Error | null) => void) {
+    public remove(key: any, callback: (error: Error | null) => void) {
 
       this.db.del(key, (err) => {
           if (err) console.log(err)
-          this.db.close()
           callback(err)
       })
-  }
+    }
 }

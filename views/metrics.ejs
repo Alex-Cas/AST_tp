@@ -5,6 +5,11 @@
     </head>
     <body class="bg-light">
         <div class="container">
+            <form action="/metrics" method="post">
+                <input type=text name="timestamp" />
+                <input type=number name="value" />
+                <button type=submit>add</button>
+            </form>
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -15,8 +20,11 @@
                             <ul>
                                 <% data.forEach(d => { %>
                                     <li>
-                                        key: <%= d.key %> <br />
-                                        value: <%= d.value %>
+                                        <form onsubmit="sendDelete('<%= d.key %>')">
+                                            key: <%= d.key %> <br />
+                                            value: <%= d.value %> <br />
+                                            <button type="submit">delete</button>
+                                        </form> 
                                     </li>
                                 <% }) %>
                             </ul>
@@ -30,6 +38,18 @@
             <svg width='500' height='400' style="overflow : visible; padding-top: 400px"></svg>
         </div>
         <script>
+            function sendDelete(key){
+                //event.preventDefault();
+                var body = {
+                    'key': key
+                }
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("DELETE", '/metrics', true);
+                xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhttp.send(JSON.stringify(body));
+            }
+        </script>
+        <!-- script>
 
             var cdata = <%- JSON.stringify(data) %>
             var adata = []
@@ -50,7 +70,7 @@
                         return "translate(" + i * barWidth + ", 0) rotate(180)";
                       });
 
-        </script>
+        </script -->
 
     </body>
 </html>

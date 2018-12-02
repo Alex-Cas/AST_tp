@@ -8,11 +8,11 @@ var User = /** @class */ (function () {
         this.email = email;
         if (!passwordHashed) {
             this.password = password;
-            this.setPassword(password);
+            //this.setPassword(password)
         }
     }
     User.fromDb = function (username, value) {
-        var _a = value.split(''), password = _a[0], email = _a[1];
+        var _a = value.split(':'), password = _a[0], email = _a[1];
         return new User(username, email, password);
     };
     User.prototype.setPassword = function (toSet) {
@@ -43,12 +43,18 @@ var UserHandler = /** @class */ (function () {
         });
     };
     UserHandler.prototype.save = function (user, callback) {
-        this.db.put("user:" + user.username, user.getPassword + ": " + user.email, function (err) {
-            //throw err?
+        user = new User(user.username, user.email, user.password);
+        this.db.put("user:" + user.username, user.getPassword() + ": " + user.email, function (err) {
+            callback(err);
         });
     };
-    UserHandler.prototype.delete = function (username, callback) {
-        // TODO
+    UserHandler.prototype.remove = function (username, callback) {
+        this.db.del("user:" + username, function (error) {
+            if (error)
+                callback(error);
+            else
+                callback(null);
+        });
     };
     return UserHandler;
 }());

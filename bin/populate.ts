@@ -13,7 +13,7 @@ const met = [
   new Metric('2013-11-04 14:50 UTC', 19)
 ]
 
-dbMet.save(0, met, (err: Error | null) => {
+dbMet.save('alexandre', met, (err: Error | null) => {
   if (err) throw err
   console.log('Metrics saved')
 })
