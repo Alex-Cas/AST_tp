@@ -6,14 +6,14 @@ var assert = require('assert')
 const dbPath: string = 'db_test/metrics'
 var dbMet: MetricsHandler
 
-describe('Metrics', function () {
+describe('Metrics', () => {
 
-    before(function () {
+    before( () => {
         LevelDb.clear(dbPath)
         dbMet = new MetricsHandler(dbPath)
     })
 
-    after(function () {
+    after( () => {
         dbMet.db.close()
     })
 
@@ -32,8 +32,8 @@ describe('Metrics', function () {
     })
 
     describe('#get', () => {
-        it('should get empty array on non existing group', function () {
-            dbMet.list('alexandre', function (err: Error | null, result?: Metric[]) {
+        it('should get empty array on non existing group', () => {
+            dbMet.list('alexandre', (err: Error | null, result?: Metric[]) => {
                 expect(err).to.be.null
                 expect(result).to.not.be.undefined
                 expect(result).to.not.be.empty

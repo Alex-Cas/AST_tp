@@ -44,17 +44,17 @@ app.listen(port, (err: Error) => {
 // AUTH
 const authRouter = express.Router()
 
-authRouter.get('/login', function (req: any, res: any) {
+authRouter.get('/login', (req: any, res: any) => {
     res.render('login')
 })
 
 
 const dbUser: UserHandler = new UserHandler('./db/users')
 
-authRouter.post('/login', function(req: any, res: any, next: any) {
+authRouter.post('/login', (req: any, res: any, next: any) => {
 
-    dbUser.get(req.body.username, function(err: Error | null, result?: User) {
-        if (err) next(err)
+    dbUser.get(req.body.username, (err: Error | null, result?: User) => {
+        //if (err) next(err)
         if (result === undefined || !result.validatePassword(req.body.password)) {
             res.redirect('/login')
         }
@@ -66,11 +66,11 @@ authRouter.post('/login', function(req: any, res: any, next: any) {
     })
 })
 
-authRouter.get('/signup', function(req: any, res: any) {
+authRouter.get('/signup', (req: any, res: any) => {
     res.render('signup')
 })
 
-authRouter.get('/logout', function(req: any, res: any) {
+authRouter.get('/logout', (req: any, res: any) => {
     if (req.session.loggedIn) {
 
         console.log("success logout")
@@ -85,7 +85,7 @@ app.use(authRouter)
 
 // AUTH CHECK
 
-const authCheck = function(req: any, res: any, next: any) {
+const authCheck = (req: any, res: any, next: any) => {
     if (req.session.loggedIn) {
         next()
     } else res.redirect('/login')
@@ -96,24 +96,24 @@ const authCheck = function(req: any, res: any, next: any) {
 
 const userRouter = express.Router()
 
-userRouter.get('/:username', function(req: any, res: any, next: any) {
+userRouter.get('/:username', (req: any, res: any, next: any) => {
 
-    dbUser.get(req.params.username, function(err: Error | null, result?: User) {
+    dbUser.get(req.params.username, (err: Error | null, result?: User) => {
         if (err || result == undefined) {
             res.status(404).send("user not found")
         } else res.status(200).json(result)
     }) 
 })
 
-userRouter.post('/', function(req: any, res: any, next: any) {
+userRouter.post('/', (req: any, res: any, next: any) => {
 
-    dbUser.get(req.body.username, function(err: Error | null, result?: User) {
+    dbUser.get(req.body.username, (err: Error | null, result?: User) => {
         if (!err || result !== undefined) {
             res.status(409).send("user already exists")
         }
         else {
 
-            dbUser.save(req.body, function(err: Error | null) {
+            dbUser.save(req.body, (err: Error | null) => {
                 if (err) next(err)
                 else res.status(201).send("user persisted")
             })
@@ -123,7 +123,7 @@ userRouter.post('/', function(req: any, res: any, next: any) {
 
 userRouter.delete('/:username', (req: any, res: any, next: any) => {
 
-    dbUser.remove(req.params.username, function(err: Error | null) {
+    dbUser.remove(req.params.username, (err: Error | null) => {
 
         console.log(err)
         if (err) res.status(404).send(`user ${req.params.username} not found`)
@@ -137,7 +137,7 @@ app.use('/user', userRouter)
 // METRICS
 const metricsRouter = express.Router()
 
-metricsRouter.use(function (req: any, res: any, next: any) {
+metricsRouter.use( (req: any, res: any, next: any) => {
     console.log(req.method)
     next()
 })

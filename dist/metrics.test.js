@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//import 'should'
 var chai_1 = require("chai");
 var metrics_1 = require("./metrics");
 var leveldb_1 = require("./leveldb");

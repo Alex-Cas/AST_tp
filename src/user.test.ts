@@ -6,14 +6,14 @@ var assert = require('assert')
 const dbPath: string = 'db_test/users'
 var dbUser: UserHandler
 
-describe('Users', function () {
+describe('Users', () => {
 
-    before(function () {
+    before( () => {
         LevelDb.clear(dbPath)
         dbUser = new UserHandler(dbPath)
     })
 
-    after(function () {
+    after( () => {
         dbUser.db.close()
     })
 
@@ -34,7 +34,7 @@ describe('Users', function () {
 
     describe('#get', () => {
 
-        it('should get user alexandre', function () {
+        it('should get user alexandre', () => {
             dbUser.get('alexandre', (err: Error | null, result?: User) => {
                 expect(err).to.be.null
                 expect(result).to.not.be.undefined
@@ -56,7 +56,7 @@ describe('Users', function () {
 
     describe('#get', () => {
 
-        it('should fail to get user alexandre', function () {
+        it('should fail to get user alexandre', () => {
             dbUser.get('alexandre', (err: Error | null, result?: User) => {
                 expect(err).to.not.be.null
                 expect(result).to.be.undefined

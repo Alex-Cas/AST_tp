@@ -41,8 +41,7 @@ authRouter.get('/login', function (req, res) {
 var dbUser = new user_1.UserHandler('./db/users');
 authRouter.post('/login', function (req, res, next) {
     dbUser.get(req.body.username, function (err, result) {
-        if (err)
-            next(err);
+        //if (err) next(err)
         if (result === undefined || !result.validatePassword(req.body.password)) {
             res.redirect('/login');
         }

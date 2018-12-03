@@ -8,7 +8,6 @@ var User = /** @class */ (function () {
         this.username = username;
         this.email = email;
         if (!passwordHashed) {
-            //this.password = password
             this.setPassword(password);
         }
         else {
@@ -20,13 +19,8 @@ var User = /** @class */ (function () {
         return new User(username, email, password);
     };
     User.prototype.setPassword = function (toSet) {
-        /*bcrypt.hash(toSet, 10, (err, hash) => {
-          // Store hash in your password DB.
-            this.password = hash
-        })*/
         var hash = bcrypt.hashSync(toSet, 10);
         this.password = hash;
-        //this.password = toSet
     };
     User.prototype.getPassword = function () {
         return this.password;
