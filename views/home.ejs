@@ -5,13 +5,16 @@
     </head>
     <body class="bg-light">
         <div class="container">
-            <button class="btn btn-danger" href="/logout" onClick='document.location.href="/logout"'>
-              Logout
-            </button>
             <div class="row">
                 <div class="card">
                     <div class="card-body">
-                        On se retrouve sur l'url /metrics !
+                        Bienvenue sur mon site...
+                        Connectez vous pour accéder aux fonctionnalités
+                        <button class="btn" href="/login" onClick='document.location.href="/login"'>Connexion</button>
+                        <hr/>
+                        <button class="btn btn-info" onClick='document.location.href="/metrics"'>Metrics</button>
+                        <hr/>
+                        <button class="btn btn-danger" href="/logout" onClick='document.location.href="/logout"'>Deconnexion</button>
                     </div>
                 </div>
             </div>

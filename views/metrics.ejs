@@ -34,12 +34,9 @@
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <svg width='500' height='400' style="overflow : visible; padding-top: 400px"></svg>
-        </div>
+
         <script>
             function sendDelete(key){
-                //event.preventDefault();
                 var body = {
                     'key': key
                 }
@@ -49,28 +46,6 @@
                 xhttp.send(JSON.stringify(body));
             }
         </script>
-        <!-- script>
-
-            var cdata = <%- JSON.stringify(data) %>
-            var adata = []
-            cdata.forEach(d => {
-                adata.push(d.value)
-            })
-            console.log(adata)
-
-            var barWidth = 70;
-            var bar = d3.select('svg')
-                      .selectAll('rect')
-                      .data(adata)
-                      .enter()
-                      .append('rect')
-                      .attr('width', barWidth - 1)
-                      .attr('height', function(d) {  return d*15; })
-                      .attr('transform', function(d, i) {
-                        return "translate(" + i * barWidth + ", 0) rotate(180)";
-                      });
-
-        </script -->
 
     </body>
 </html>

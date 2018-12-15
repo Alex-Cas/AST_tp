@@ -61,7 +61,7 @@ authRouter.post('/login', (req: any, res: any, next: any) => {
         else {
             req.session.loggedIn = true
             req.session.user = result
-            res.redirect('/')
+            res.redirect('/metrics')
         }
     })
 })
@@ -151,14 +151,6 @@ metricsRouter.get('/', (req: any, res: any, next: any) => {
         res.render('metrics', {data: result})
     })
 })
-
-/*router.get('/:id', (req: any, res: any, next: any) => {
-
-    dbMet.get(req.params.id, (err: Error | null, result?: any) => {
-        if (err) next(err)
-        res.json(result)
-    })
-})*/
 
 metricsRouter.post('/', (req: any, res: any, next: any) => {
 
