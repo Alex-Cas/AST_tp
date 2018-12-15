@@ -32,20 +32,6 @@ export class MetricsHandler {
             .on('end', () => {callback(null, result)})
     }
 
-    /*public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
-
-        let result: any[] = []
-
-        this.db.createReadStream()
-            .on('data', (data) => {
-                if (data.key.split(':')[1] == key) {
-                    result.push(data)
-                }
-            })
-            .on('error', (err) => {callback(err)})
-            .on('end', () => {callback(null, result)})
-    }*/
-
     public save(key: string, metrics: Metric[], callback: (error: Error | null) => void) {
 
         const stream = WriteStream(this.db)

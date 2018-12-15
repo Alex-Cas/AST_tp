@@ -48,7 +48,7 @@ authRouter.post('/login', function (req, res, next) {
         else {
             req.session.loggedIn = true;
             req.session.user = result;
-            res.redirect('/');
+            res.redirect('/metrics');
         }
     });
 });
@@ -122,13 +122,6 @@ metricsRouter.get('/', function (req, res, next) {
         res.render('metrics', { data: result });
     });
 });
-/*router.get('/:id', (req: any, res: any, next: any) => {
-
-    dbMet.get(req.params.id, (err: Error | null, result?: any) => {
-        if (err) next(err)
-        res.json(result)
-    })
-})*/
 metricsRouter.post('/', function (req, res, next) {
     dbMet.save(req.session.user.username, req.body, function (err) {
         if (err)

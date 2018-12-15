@@ -28,19 +28,6 @@ var MetricsHandler = /** @class */ (function () {
             .on('error', function (err) { callback(err); })
             .on('end', function () { callback(null, result); });
     };
-    /*public get(key: string, callback: (error: Error | null, result?: Metric[]) => void) {
-
-        let result: any[] = []
-
-        this.db.createReadStream()
-            .on('data', (data) => {
-                if (data.key.split(':')[1] == key) {
-                    result.push(data)
-                }
-            })
-            .on('error', (err) => {callback(err)})
-            .on('end', () => {callback(null, result)})
-    }*/
     MetricsHandler.prototype.save = function (key, metrics, callback) {
         var stream = level_ws_1.default(this.db);
         if (!Array.isArray(metrics)) {
