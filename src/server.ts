@@ -41,7 +41,9 @@ app.listen(port, (err: Error) => {
   console.log(`server is listening on port ${port}`)
 })
 
-// AUTH
+/* 
+ * AUTHENTIFICATION
+ */
 const authRouter = express.Router()
 
 authRouter.get('/login', (req: any, res: any) => {
@@ -54,7 +56,6 @@ const dbUser: UserHandler = new UserHandler('./db/users')
 authRouter.post('/login', (req: any, res: any, next: any) => {
 
     dbUser.get(req.body.username, (err: Error | null, result?: User) => {
-        //if (err) next(err)
         if (result === undefined || !result.validatePassword(req.body.password)) {
             res.redirect('/login')
         }
@@ -83,8 +84,10 @@ authRouter.get('/logout', (req: any, res: any) => {
 app.use(authRouter)
 
 
-// AUTH CHECK
 
+/* 
+ * AUTH MIDDLEWARE
+ */
 const authCheck = (req: any, res: any, next: any) => {
     if (req.session.loggedIn) {
         next()
@@ -92,8 +95,10 @@ const authCheck = (req: any, res: any, next: any) => {
 }
 
 
-// USERS
 
+/* 
+ * USERS
+ */
 const userRouter = express.Router()
 
 userRouter.get('/:username', (req: any, res: any, next: any) => {
@@ -134,7 +139,10 @@ userRouter.delete('/:username', (req: any, res: any, next: any) => {
 
 app.use('/user', userRouter)
 
-// METRICS
+
+/* 
+ * METRICS
+ */
 const metricsRouter = express.Router()
 
 metricsRouter.use( (req: any, res: any, next: any) => {
@@ -174,11 +182,17 @@ app.use('/metrics', authCheck, metricsRouter)
 
 
 
+/* 
+ * NOT FOUND
+ */
 app.get('*', (req, res) => {
     res.status(404).render('notFound', {url: req.url})
 })
 
 
+/* 
+ * ERROR CATCHER
+ */
 app.use(function (err: Error, req: any, res: any) {
     console.error(err.stack)
     res.status(500).send("Smoething broke")
