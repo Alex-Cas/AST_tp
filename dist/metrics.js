@@ -7,7 +7,7 @@ var leveldb_1 = require("./leveldb");
 var level_ws_1 = __importDefault(require("level-ws"));
 var Metric = /** @class */ (function () {
     function Metric(ts, v) {
-        this.timestamp = new Date(ts);
+        this.timestamp = ts;
         this.value = v;
     }
     return Metric;

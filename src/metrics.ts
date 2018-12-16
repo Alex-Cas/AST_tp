@@ -2,11 +2,11 @@ import {LevelDb} from './leveldb'
 import WriteStream from 'level-ws'
 
 export class Metric {
-  public timestamp: Date
+  public timestamp: string
   public value: number
 
   constructor(ts: string, v: number) {
-    this.timestamp = new Date(ts)
+    this.timestamp = ts
     this.value = v
   }
 }
